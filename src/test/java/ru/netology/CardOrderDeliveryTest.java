@@ -1,31 +1,50 @@
 package ru.netology;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Condition.*;
+
 
 public class CardOrderDeliveryTest {
 
-    @BeforeEach
-    void setUp() {
-        open("http://localhost:9999");
-    }
-
     @Test
-    public void shouldSuccessfully() {
+    public void shouldSuccessfullyWithManualFilling() {
         Configuration.timeout = 15000;
-        $("[placeholder='Город']").setValue("Хаба");
-        $(".menu-item__control").click();
-//        $(".calendar-input__native-control").click();
-//        $(".calendar-input__native-control").setValue("2021-01-29");
+        open("http://localhost:9999");
+        $("[placeholder='Город']").setValue("Хабаровск");
+        $("[placeholder='Дата встречи']").click();
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
+        $("[placeholder='Дата встречи']").setValue("29.01.2021");
         $("[name='name']").setValue("Курбатов Владислав");
         $("[name='phone']").setValue("+79066786545");
         $(".checkbox__box").click();
         $(withText("Забронировать")).click();
-        $(withText("Успешно!")).shouldBe(visible);
+        $(withText("Успешно!")).shouldBe(Condition.visible);
+    }
+
+    @Test
+    public void shouldSuccessfullyWithAutocomplete() {
+        Configuration.timeout = 15000;
+        open("http://localhost:9999");
+        $("[placeholder='Город']").setValue("Ха");
+        $(byText("Хабаровск")).click();
+        $("[placeholder='Дата встречи']").click();
+        $(withText("30")).click();
+        $("[name='name']").setValue("Курбатов Владислав");
+        $("[name='phone']").setValue("+79066786545");
+        $(".checkbox__box").click();
+        $(withText("Забронировать")).click();
+        $(withText("Успешно!")).shouldBe(Condition.visible);
     }
 }
