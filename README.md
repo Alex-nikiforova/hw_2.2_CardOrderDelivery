@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/epbv1jljnx2dngy2/branch/main?svg=true)](https://ci.appveyor.com/project/Alex-nikiforova/hw-2-2-cardorderdelivery/branch/main)
