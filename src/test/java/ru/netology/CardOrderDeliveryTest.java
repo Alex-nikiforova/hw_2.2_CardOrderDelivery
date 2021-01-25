@@ -1,21 +1,44 @@
 package ru.netology;
 
+import com.codeborne.selenide.ClickOptions;
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
-import static java.time.temporal.TemporalQueries.localDate;
 
 
 public class CardOrderDeliveryTest {
+
+    private ClickOptions equalsMonths() {
+
+        DateTimeFormatter formatterDays = DateTimeFormatter.ofPattern("dd");
+        String meetingDate = LocalDate.now().plusDays(7).format(formatterDays);
+
+        DateTimeFormatter formatterMonths = DateTimeFormatter.ofPattern("MM");
+        int month1 = Integer.parseInt(LocalDate.now().format(formatterMonths));
+        int month2 = Integer.parseInt(LocalDate.now().plusDays(7).format(formatterMonths));
+
+        if (month2 == month1) {
+            $("[type='button']").click();
+            $$(".calendar__day").shouldHave(CollectionCondition.itemWithText(meetingDate));
+        }
+        if (month2 > month1) {
+            $("[type='button']").click();
+            $("[data-step='1']").click();
+            $$(".calendar__day").shouldHave(CollectionCondition.itemWithText(meetingDate));
+        }
+        return null;
+    }
 
     @BeforeEach
     void setUp() {
@@ -24,19 +47,19 @@ public class CardOrderDeliveryTest {
 
     @Test
     public void shouldSuccessfullyWithManualFilling() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String meetingDate = LocalDate.now().plusDays(3).format(formatter);
 
         $("[placeholder='Город']").setValue("Хабаровск");
-        $("[placeholder='Дата встречи']").click();
         $("[placeholder='Дата встречи']").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.BACK_SPACE);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        String localDate = LocalDate.now().plusDays(3).format(formatter);
-        $("[placeholder='Дата встречи']").setValue(localDate);
+        $("[placeholder='Дата встречи']").setValue(meetingDate);
         $("[name='name']").setValue("Курбатов Владислав");
         $("[name='phone']").setValue("+79066786545");
         $(".checkbox__box").click();
         $(withText("Забронировать")).click();
-        $(withText("Успешно!")).shouldBe(Condition.visible, Duration.ofMillis(15000));
-        $(withText("Встреча успешно забронирована на "+ localDate)).shouldBe(Condition.visible, Duration.ofMillis(15000));
+        $(byText("Успешно!")).shouldBe(Condition.visible, Duration.ofMillis(15000));
+        $("[data-test-id='notification'] .notification__content")
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + meetingDate));
     }
 
     @Test
@@ -44,8 +67,7 @@ public class CardOrderDeliveryTest {
 
         $("[placeholder='Город']").setValue("Ха");
         $(byText("Хабаровск")).click();
-        $("[placeholder='Дата встречи']").click();
-        $(withText("30")).click();
+        $("[placeholder='Дата встречи']").click(Objects.requireNonNull(equalsMonths()));
         $("[name='name']").setValue("Курбатов Владислав");
         $("[name='phone']").setValue("+79066786545");
         $(".checkbox__box").click();
