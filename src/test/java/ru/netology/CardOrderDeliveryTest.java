@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +30,11 @@ public class CardOrderDeliveryTest {
             $$(".calendar__day").find(text(meetingDate)).click();
         }
         if (month2 > month1) {
+            $("[type='button']").click();
+            $("[data-step='1']").click();
+            $$(".calendar__day").find(text(meetingDate)).click();
+        }
+        if (month2 < month1) {
             $("[type='button']").click();
             $("[data-step='1']").click();
             $$(".calendar__day").find(text(meetingDate)).click();
