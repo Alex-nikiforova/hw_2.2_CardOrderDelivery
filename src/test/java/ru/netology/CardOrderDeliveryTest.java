@@ -16,28 +16,17 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class CardOrderDeliveryTest {
 
-    public void selectPlusSevenDaysDate() {
+    private void selectPlusSevenDaysDate() {
 
-        DateTimeFormatter formatterDays = DateTimeFormatter.ofPattern("d");
-        String meetingDate = LocalDate.now().plusDays(7).format(formatterDays);
+        LocalDate today = LocalDate.now();
+        LocalDate deliveryDate = LocalDate.now().plusDays(7);
 
-        DateTimeFormatter formatterMonths = DateTimeFormatter.ofPattern("M");
-        int month1 = Integer.parseInt(LocalDate.now().format(formatterMonths));
-        int month2 = Integer.parseInt(LocalDate.now().plusDays(7).format(formatterMonths));
-
-        if (month2 == month1) {
-            $("[type='button']").click();
-            $$(".calendar__day").find(text(meetingDate)).click();
-        }
-        if (month2 > month1) {
+        if (deliveryDate.getMonthValue() != today.getMonthValue()) {
             $("[type='button']").click();
             $("[data-step='1']").click();
-            $$(".calendar__day").find(text(meetingDate)).click();
         }
-        if (month2 < month1) {
+        if (deliveryDate.getMonthValue() == today.getMonthValue()) {
             $("[type='button']").click();
-            $("[data-step='1']").click();
-            $$(".calendar__day").find(text(meetingDate)).click();
         }
     }
 
@@ -66,12 +55,15 @@ public class CardOrderDeliveryTest {
     @Test
     public void shouldSuccessfullyWithAutocomplete() {
 
+        String meetingDateDay = String.valueOf(LocalDate.now().plusDays(7).getDayOfMonth());
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String meetingDate = LocalDate.now().plusDays(7).format(formatter);
 
         $("[placeholder='Город']").setValue("Ха");
         $(byText("Хабаровск")).click();
         selectPlusSevenDaysDate();
+        $$(".calendar__day").find(text(meetingDateDay)).click();
         $("[name='name']").setValue("Курбатов Владислав");
         $("[name='phone']").setValue("+79066786545");
         $(".checkbox__box").click();
